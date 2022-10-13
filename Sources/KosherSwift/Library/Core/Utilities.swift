@@ -16,23 +16,23 @@ extension Double {
         (self * 180.0) / .pi
     }
     
-    var sinOf: Double {
+    func sinDeg() -> Double {
         sin(self * 2.0 * .pi / 360.0)
     }
     
-    var acosOf: Double {
+    func acosDeg() -> Double {
         acos(self) * 360.0 / (2 * .pi);
     }
     
-    var asinOf: Double {
+    func asinDeg() -> Double {
         asin(self) * 360.0 / (2 * .pi)
     }
     
-    var tanOf: Double {
+    func tanDeg() -> Double {
         tan(self * 2.0 * .pi / 360.0)
     }
     
-    var cosOf: Double {
+    func cosDeg() -> Double {
         cos(self * 2.0 * .pi / 360.0)
     }
 }
