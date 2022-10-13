@@ -11,12 +11,13 @@ class AstronomicalCalendar {
     var astronomicalCalculator: SunriseAndSunsetCalcuator
     var geoLocation: GeoLocation
     var workingDate: Date
-    var internalCalendar: Calendar
+    private var internalCalendar: Calendar
     
-    required init(location: GeoLocation) {
+    init(location: GeoLocation) {
         self.geoLocation = location
         self.workingDate = Date()
         self.internalCalendar = Calendar(identifier: .gregorian)
+        self.astronomicalCalculator = SunriseAndSunsetCalcuator(location: location)
     }
     
     /**
@@ -33,7 +34,7 @@ class AstronomicalCalendar {
      *  at least one day a year that the sun does not rise, and one where it does not set,
      *  nil will be returned.
      */
-
+    
     var sunrise: Date? {
         let sunrise = UTCSunrise(zenith: Double(Constants.Zenith.geometric))
         if sunrise == nil { return nil }
@@ -149,7 +150,7 @@ class AstronomicalCalendar {
     func sunsetOffsetByDegrees(offsetZenith: Float) -> Date? {
         return sunsetOffsetByDegrees(offsetZenith: Double(offsetZenith))
     }
-
+    
     
     /**
      * A method that will roll the sunset time forward a day if sunset occurs before sunrise. This is a rare occurrence
@@ -170,9 +171,9 @@ class AstronomicalCalendar {
         if sunrise != nil &&
             sunset != nil &&
             sunrise!.timeIntervalSince(sunset!) > 0 {
-            #error("Placeholder")
-            
+            return internalCalendar.date(byAdding: .day, value: 1, to: sunset!)
         }
+        return sunset
     }
     
     /**
@@ -181,7 +182,9 @@ class AstronomicalCalendar {
      * @return The <code>Date</code> of the end of civil twilight using a zenith of {@link #CIVIL_ZENITH 96&deg;}. If
      *         the calculation can't be computed, nil will be returned. See detailed explanation on top of the page.
      */
-    var endCivilTwilight: Date?
+    var endCivilTwilight: Date? {
+        sunsetOffsetByDegrees(offsetZenith: Constants.Zenith.civil)
+    }
     
     /**
      * A method that returns the end of nautical twilight using a zenith of {@link #NAUTICAL_ZENITH 102&deg;}.
@@ -190,7 +193,9 @@ class AstronomicalCalendar {
      *         . If the calculation can't be computed, nil will be returned. See detailed explanation on top of the
      *         page.
      */
-    var endNauticalTwilight: Date?
+    var endNauticalTwilight: Date? {
+        sunsetOffsetByDegrees(offsetZenith: Constants.Zenith.nautical)
+    }
     
     /**
      * A method that returns the end of astronomical twilight using a zenith of {@link #ASTRONOMICAL_ZENITH 108&deg;}.
@@ -199,7 +204,9 @@ class AstronomicalCalendar {
      *         108&deg;}. If the calculation can't be computed, nil will be returned. See detailed explanation on top
      *         of the page.
      */
-    var endAstronomicalTwilight: Date?
+    var endAstronomicalTwilight: Date? {
+        sunsetOffsetByDegrees(offsetZenith: Constants.Zenith.astronomical)
+    }
     
     /**
      * A method that returns the sunrise in UTC time without correction for time zone offset from GMT and without using
@@ -211,7 +218,7 @@ class AstronomicalCalendar {
      *         not set, `nil` will be returned. See detailed explanation on top of the page.
      */
     func UTCSunrise(zenith: Double) -> Double? {
-        <#code#>
+        astronomicalCalculator.UTCSunriseForDate(date: workingDate, zenith: zenith, adjustForElevation: true)
     }
     
     func UTCSunrise(zenith: Float) -> Double? {
@@ -230,7 +237,8 @@ class AstronomicalCalendar {
      *         not set, `nil` will be returned. See detailed explanation on top of the page.
      */
     func UTCSeaLevelSunrise(zenith: Double) -> Double? {
-        <#code#>
+#warning("Might not be properly translated from Obj-C")
+        return astronomicalCalculator.UTCSunriseForDate(date: workingDate, zenith: zenith, adjustForElevation: false)
     }
     
     /**
@@ -243,13 +251,13 @@ class AstronomicalCalendar {
      *         not set, `nil` will be returned. See detailed explanation on top of the page.
      */
     func UTCSunset(zenith: Double) -> Double? {
-        <#code#>
+        return astronomicalCalculator.UTCSunsetForDate(date: workingDate, zenith: zenith, adjustForElevation: true)
     }
-
+    
     func UTCSunset(zenith: Float) -> Double? {
         return UTCSunset(zenith: Double(zenith))
     }
-
+    
     /**
      * A method that returns the sunset in UTC time without correction for elevation, time zone offset from GMT and
      * without using daylight savings time. Non-sunrise and sunset calculations such as dawn and dusk, depend on the
@@ -261,15 +269,15 @@ class AstronomicalCalendar {
      * @return The time in the format: 18.75 for 18:45:00 UTC/GMT. If the calculation can't be computed such as in the
      *         Arctic Circle where there is at least one day a year where the sun does not rise, and one where it does
      *         not set, `nil` will be returned. See detailed explanation on top of the page.
-    */
+     */
     func UTCSeaLevelSunset(zenith: Double) -> Double? {
-        <#code#>
+        return astronomicalCalculator.UTCSunsetForDate(date: workingDate, zenith: zenith, adjustForElevation: false)
     }
     func UTCSeaLevelSunset(zenith: Float) -> Double? {
         return UTCSeaLevelSunset(zenith: Double(zenith))
     }
     
-
+    
     /**
      * A utility method that will allow the calculation of a temporal (solar) hour based on the sunrise and sunset
      * passed as parameters to this method. An example of the use of this method would be the calculation of a
@@ -279,14 +287,19 @@ class AstronomicalCalendar {
      * @param sunrise The start of the day.
      * @param sunset The end of the day.
      *
-     * @return the long millisecond length of the temporal hour. If the calculation can't be computed a
-     *         LONG_MIN will be returned. See detailed explanation on top of the page.
+     * @return the long millisecond length of the temporal hour. If the calculation can't be computed,
+     *         nil will be returned. See detailed explanation on top of the page.
      */
-    func temporalHourFromSunrise(sunrise: Date, sunset: Date) -> Double {
-        <#code#>
+    func temporalHourFromSunrise(sunrise: Date?, sunset: Date?) -> Double? {
+        guard sunrise != nil,
+              sunset  != nil
+        else {
+            return nil
+        }
+        return sunset!.timeIntervalSince(sunrise!)/12
     }
     
-
+    
     /**
      * A method that returns sundial or solar noon. It occurs when the Sun is
      * http://en.wikipedia.org/wiki/Transit_%28astronomy%29 transitting the
@@ -298,43 +311,11 @@ class AstronomicalCalendar {
      *         Arctic Circle where there is at least one day a year where the sun does not rise, and one where it does
      *         not set, nil will be returned. See detailed explanation on top of the page.
      */
-    var sunTransit: Date?
-    
-
-    /**
-     *  This method returns the calculated time
-     *  as an NSDate object based on the user's time zone
-     *  and today's date.
-     *
-     *  @param time The time as a double.
-     *
-     *  @return The calculated time
-     *  as an NSDate object based on the user's time zone
-     *  and today's date.
-     */
-    func dateFromTime(time: Double) -> Date {
-        <#code#>
+    var sunTransit: Date? {
+        return self.sunrise! + temporalHourFromSunrise(sunrise: sunrise, sunset: sunset)! * 6
     }
     
-
-    /**
-     *  A method that returns the calculated time
-     *  as an NSDate object based on a given time
-     *  zone and a given date.
-     *
-     *  Returns nil if the the "time" parameter is NAN.
-     *
-     *  @param time the time offset from the start of the day, representing hours, minutes, and seconds.
-     *  @param tz A timezone to use to calculate the date.
-     *  @param date The date representing the units larger than hours.
-     *
-     *  @return An NSDate containing the exact time represented by combining the date and time values.
-     */
-    func dateFromTime(time: Double, timeZone: TimeZone, onDate: Date) -> Date? {
-        <#code#>
-    }
     
-
     /**
      *  Returns a formatted string representing the supplied
      *  date in the supplied time zone.
@@ -345,12 +326,49 @@ class AstronomicalCalendar {
      *
      *  @param date The date to display.
      *  @param timezone The time zone to format against.
+     *  @param date The date representing the units larger than hours.
      *
      *  @return A string representation of the supplied date in the supplied time zone.
      */
-    func stringFromDate(date: Date, timeZone: TimeZone, shouldShowSeconds: Bool) -> String {
-        <#code#>
+    func dateFromTime(time: Double, timezone: TimeZone? = nil, onDate date: Date?=nil) -> Date {
+        let timezone = timezone ?? TimeZone.current
+        let date = date ?? workingDate
+        
+        var calculatedTime = time
+        let gregorianCalendar = Calendar(identifier: .gregorian)
+        var components: DateComponents = gregorianCalendar.dateComponents([
+            .year, .month, .weekOfYear, .day,
+            .hour, .minute, .second, .era
+        ], from: date)
+        
+        components.timeZone = TimeZone(secondsFromGMT: 0)
+        let hours = Int(calculatedTime)
+        calculatedTime -= Double(hours)
+        calculatedTime *= 60
+        let minutes = Int(calculatedTime)
+        calculatedTime -= Double(minutes)
+        let seconds = Int(calculatedTime * 60)
+        components.hour = hours
+        components.minute = minutes
+        components.second = seconds
+        
+        var returnDate = gregorianCalendar.date(from: components)!
+        
+        let offsetFromGMT = Double(timezone.secondsFromGMT(for: date) / 3600)
+        
+        if time + offsetFromGMT > 24 {
+            returnDate = internalCalendar.date(byAdding: .day, value: -1, to: returnDate)!
+        } else if time + offsetFromGMT < 0 {
+            returnDate = internalCalendar.date(byAdding: .day, value: 1, to: returnDate)!
+        }
+        
+        return returnDate
     }
     
-    
+    func stringFromDate(_ date: Date, timezone: TimeZone, withSeconds: Bool=true) -> String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = withSeconds ? .medium : .long
+        formatter.timeZone = timezone
+        return formatter.string(from: date)
+    }
 }

@@ -6,34 +6,13 @@
 //
 
 import Foundation
-protocol GeoLocation {
-    var loationName: String { get }
-    var timeZone: TimeZone { get }
-    var latitude: Double { get }
-    var longitude: Double { get }
+class GeoLocation {
+    let loationName: String
+    var latitude: Double
+    var longitude: Double
+    let timeZone: TimeZone
+    let altitude: Double
     
-    /**
-     *  This method insantiates a new KCGeoLocation.
-     *
-     *  @param latitude The latitude that the location represents.
-     *  @param longitude The longitude that the location represents.
-     *  @param timezone The time zone that the location represents.
-     *
-     *  @return A configured KCGeoLocation instance.
-     */
-    init(latitude: Double, longitude: Double, timezone: TimeZone)
-    
-    /**
-     *  This method insantiates a new KCGeoLocation.
-     *
-     *  @param latitude The latitude that the location represents.
-     *  @param longitude The longitude that the location represents.
-     *  @param elevation The altitude that the location represents.
-     *  @param timezone The time zone that the location represents.
-     *
-     *  @return A configured KCGeoLocation instance.
-     */
-    init(latidude: Double, longitude: Double, elevation: Double, timeZone: TimeZone)
     
     /**
      *  This method insantiates a new KCGeoLocation.
@@ -42,56 +21,182 @@ protocol GeoLocation {
      *  @param latitude The latitude that the location represents.
      *  @param longitude The longitude that the location represents.
      *  @param timezone The time zone that the location represents.
-     *
-     *  @return A configured KCGeoLocation instance.
-     */
-    init(name: String, latitude: Double, longitude: Double, timeZone: TimeZone)
-    
-    /**
-     *  This method insantiates a new KCGeoLocation.
-     *
-     *  @param name A name for the location. This isn't required.
-     *  @param latitude The latitude that the location represents.
-     *  @param longitude The longitude that the location represents.
      *  @param elevation The altitude that the location represents.
-     *  @param timezone The time zone that the location represents.
      *
      *  @return A configured KCGeoLocation instance.
      */
-    init(name: String, latituide: Double, longitude: Double, elevation: Double, timeZone: TimeZone)
+    init(name: String="Unspecified Location", latituide: Double, longitude: Double, timeZone: TimeZone, elevation: Double=0) {
+        self.loationName = name
+        self.latitude = latituide
+        self.longitude = longitude
+        self.timeZone = timeZone
+        self.altitude = elevation
+    }
     
-    /**
-     * Calculate [geodesic distance](http://en.wikipedia.org/wiki/Great-circle_distance) in Meters between this Object and a second Object passed to
-     * this method using [Thaddeus Vincenty's inverse formula](http://en.wikipedia.org/wiki/Thaddeus_Vincenty)
-     * See T Vincenty, [Direct and Inverse Solutions of Geodesics on the Ellipsoid with application of nested equations](http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf), Survey Review, vol XXII no 176, 1975.
-     *
-     *  @param location the destination location
-     *  @param formula This formula calculates initial bearing InitialBearing, final bearing ({@link #FINAL_BEARING}) and distance ({@link #DISTANCE}).
-     *
-     *  @return The value of the formula with the location.
-     */
-    func vincentyFormulaForLocation(location: GeoLocation, withBearing formula: Int)
+    static let Sample = GeoLocation(name: "Greenwich, England",
+                                    latituide: 51.4772,
+                                    longitude: 0,
+                                    timeZone: TimeZone(secondsFromGMT: 0)!
+    )
     
-    /**
-     * A method that will return the location's local mean time
-     *  offset in milliseconds from local
-     *  "http://en.wikipedia.org/wiki/Standard_time" standard time.
-     *  The globe is split into 360&deg;, with
-     *   15&deg; per hour of the day. For a local that is at a longitude that
-     *  is evenly divisible by 15 (longitude % 15 == 0), at solar noon (with
-     *  adjustment for the
-     *  "http://en.wikipedia.org/wiki/Equation_of_time"equation of time) the sun
-     *  should be directly overhead, so a user who is 1&deg; west of this will have noon at 4
-     *  minutes after standard time noon, and conversely, a user
-     *  who is 1&deg; east of the 15&deg; longitude will have noon at 11:56 AM. Lakewood, N.J.,
-     *  whose longitude is -74.2094, is 0.7906 away from the closest multiple of 15 at -75&deg;.
-     *  This is multiplied by 4 to yield 3 minutes and 10 seconds earlier than standard time.
-     *  The offset returned does not account for the
-     *  "http://en.wikipedia.org/wiki/Daylight_saving_time"Daylight saving time
-     *  offset since this class is unaware of dates.
-     *
-     *  @return the offset in milliseconds not accounting for Daylight saving time. A positive
-     *  value will be returned East of the 15&deg; timezone line, and a negative value West of i
-     */
-    func localMeanTimeOffset() -> Int
+    enum Direction {
+        case North
+        case East
+        case West
+        case South
+    }
+    
+    func setLatitudeWith(degrees: Double, minutes: Double, seconds: Double, direction: Direction) {
+        var lat = degrees + minutes + (seconds / 60.0) / 60.0
+        guard lat >= 0 && lat <= 90 else {
+            print("WARNING: \(lat) must be between 0 and 90. Use .South instead of negative values.")
+            return
+        }
+        
+        if direction == .South {
+            lat *= -1
+        } else if direction != .North {
+            print("WARNING: `direction` must be .North or .South.")
+            return
+        }
+        self.latitude = lat
+    }
+    
+    func setLongitudeWith(degrees: Double, minutes: Double, seconds: Double, direction: Direction) {
+        var lon = degrees + minutes + (seconds / 60.0) / 60.0
+        guard lon >= 0 && lon <= 180 else {
+            print("WARNING: \(lon) must be between 0 and 180. Use .West instead of negative values.")
+            return
+        }
+        
+        if direction == .West {
+            lon *= -1
+        } else if direction != .East {
+            print("WARNING: `direction` must be .East or .West.")
+            return
+        }
+        self.longitude = lon
+    }
+
+    var localMeanTimeOffset: Int {
+        Int(self.longitude) * 4 * 60 * 1000 - (self.timeZone.secondsFromGMT() * 1000)
+    }
+    
+    func vincentyFormulaFor(location: GeoLocation, withBearing formula: Constants.BearingFormula) -> Double? {
+        var a: Double = 6378137
+        var b: Double = 6356752.3142
+        var f: Double = 1 / 298.257223563  // WGS-84 ellipsio
+        var L: Double = (location.longitude - self.longitude).inRadians
+        var U1: Double = atan((1 - f) * tan(self.latitude.inRadians))
+        var U2: Double = atan((1 - f) * tan(location.latitude.inRadians))
+        var sinU1: Double = sin(U1), cosU1 = cos(U1)
+        var sinU2: Double = sin(U2), cosU2 = cos(U2)
+        
+        var lambda: Double = L
+        var lambdaP: Double = 2 * .pi
+        var iterLimit: Double = 20
+        var sinLambda: Double = 0
+        var cosLambda: Double = 0
+        var sinSigma: Double = 0
+        var cosSigma: Double = 0
+        var sigma: Double = 0
+        var sinAlpha: Double = 0
+        var cosSqAlpha: Double = 0
+        var cos2SigmaM: Double = 0
+        var C: Double
+
+        while (fabs(lambda - lambdaP) > 1e-12 && {iterLimit -= 1; return iterLimit}() > 0) {
+            sinLambda = sin(lambda)
+            cosLambda = cos(lambda)
+            sinSigma = sqrt((cosU2 * sinLambda) * (cosU2 * sinLambda)
+                            + (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda)
+                            * (cosU1 * sinU2 - sinU1 * cosU2 * cosLambda))
+            if sinSigma == 0 {
+                return 0 // co-incident points
+            }
+            cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda
+            sigma = atan2(sinSigma, cosSigma)
+            sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma
+            cosSqAlpha = 1 - sinAlpha * sinAlpha
+            cos2SigmaM = cosSigma - 2 * sinU1 * sinU2 / cosSqAlpha
+            //Check if this is correct
+            if cos2SigmaM.isNaN {
+                cos2SigmaM = 0 // equatorial line: cosSqAlpha=0 (ß6)
+            }
+            C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha))
+            lambdaP = lambda
+            lambda = L
+            + (1 - C)
+            * f
+            * sinAlpha
+            * (sigma + C
+               * sinSigma
+               * (cos2SigmaM + C * cosSigma
+                  * (-1 + 2 * cos2SigmaM * cos2SigmaM)
+                 )
+            )
+        }
+        
+        if iterLimit == 0 {
+            return nil; // formula failed to converge
+        }
+        
+        var uSq: Double = cosSqAlpha * (a * a - b * b) / (b * b);
+        var A: Double = 1 + uSq / 16384
+        * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)));
+        var B: Double = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)));
+        var deltaSigma: Double = B
+        * sinSigma
+        * (cos2SigmaM + B
+           / 4
+           * (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) - B
+              / 6 * cos2SigmaM
+              * (-3 + 4 * sinSigma * sinSigma)
+              * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
+        var distance: Double = b * A * (sigma - deltaSigma);
+        
+        // initial bearing
+        var fwdAz: Double = atan2(cosU2 * sinLambda, cosU1 * sinU2 - sinU1 * cosU2 * cosLambda).inDegrees
+        // final bearing
+        var revAz: Double = atan2(cosU1 * sinLambda, -sinU1 * cosU2 + cosU1 * sinU2 * cosLambda).inDegrees
+        switch formula {
+        case .distance:
+            return distance
+        case .initialBearing:
+            return fwdAz
+        case .finalBearing:
+            return revAz
+        }
+
+    }
+    
+    func getRhumbLineBearingFor(location: GeoLocation) -> Double {
+        let dLon = (location.longitude - self.longitude).inRadians
+        let dPhi = log(
+            tan(location.latitude.inRadians / 2 + .pi / 4) /
+            tan(self.latitude.inRadians / 2 + .pi / 4)
+        )
+        return atan2(dLon, dPhi).inDegrees
+    }
+    
+    func getRhumbLineDistanceFor(location: GeoLocation) -> Double {
+        let R: Double = 6371;  // earth's mean radius in km
+        let dLat: Double = (location.latitude - self.latitude).inRadians;
+        var dLon: Double = fabs(location.longitude - self.longitude).inRadians;
+        let dPhi: Double = log(tan(location.longitude.inRadians / 2 + .pi / 4) /
+                               tan(self.latitude.inRadians / 2 + .pi / 4));
+        let q: Double = (fabs(dLat) > 1e-10) ? dLat / dPhi : cos(self.latitude.inRadians);
+        // if dLon over 180° take shorter rhumb across 180° meridian:
+        if dLon > .pi {
+            dLon = 2 * .pi - dLon;
+        }
+        let d = sqrt(dLat * dLat + q * q * dLon * dLon);
+        
+        return d * R;
+    }
+
+    var description: String {
+        return "<GeoLocation:> ----\nName: \(self.loationName) \nLatitude: \(latitude), \nLongitude: \(longitude) \nAltitude: \(altitude)"
+    }
+    
 }
