@@ -8,8 +8,8 @@
 import Foundation
 extension Calendar {
     func date(_ lhs: Date, isSameDayAs rhs: Date) -> Bool {
-        let firstDay = self.daysInDate(date: lhs)
-        let secondDay = self.daysInDate(date: rhs)
+        let firstDay = self.daysOfDate(date: lhs)
+        let secondDay = self.daysOfDate(date: rhs)
         
         let sameMonth = date(lhs, isSameMonthAs: rhs)
         let sameDay = firstDay == secondDay
@@ -28,8 +28,8 @@ extension Calendar {
     }
     
     func date(_ lhs: Date, isSameMonthAs rhs: Date) -> Bool {
-        let firstMonth = monthsInDate(date: lhs)
-        let secondMonth = monthsInDate(date: rhs)
+        let firstMonth = monthsOfDate(date: lhs)
+        let secondMonth = monthsOfDate(date: rhs)
         
         let sameMonth = firstMonth == secondMonth
         let sameYear = date(lhs, isSameYearAs: rhs)
@@ -38,8 +38,8 @@ extension Calendar {
     }
     
     func date(_ lhs: Date, isSameYearAs rhs: Date) -> Bool {
-        let firstYear = yearsInDate(date: lhs)
-        let secondYear = yearsInDate(date: rhs)
+        let firstYear = yearOfDate(date: lhs)
+        let secondYear = yearOfDate(date: rhs)
         
         let sameYear = firstYear == secondYear
         let sameEra = date(lhs, isSameEraAs: rhs)
@@ -48,8 +48,8 @@ extension Calendar {
     }
     
     func date(_ lhs: Date, isSameEraAs rhs: Date) -> Bool {
-        let firstEra = eraInDate(date: lhs)
-        let secondEra = eraInDate(date: rhs)
+        let firstEra = eraOfDate(date: lhs)
+        let secondEra = eraOfDate(date: rhs)
         
         return firstEra == secondEra
     }

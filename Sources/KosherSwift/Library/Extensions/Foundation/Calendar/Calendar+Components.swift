@@ -19,31 +19,36 @@ extension Calendar {
         return self.component(.weekday, from: date)
     }
     
-    func secondsInDate(date: Date) -> Int {
+    func weekdayOf(_ date: Date) -> Weekday {
+        let dayIndex = weekdayNumber(date: date)
+        return Weekday(rawValue: dayIndex)!
+    }
+    
+    func secondsOfDate(date: Date) -> Int {
         return self.component(.second, from: date)
     }
     
-    func minutesInDate(date: Date) -> Int {
+    func minutesOfDate(date: Date) -> Int {
         return self.component(.minute, from: date)
     }
     
-    func hoursInDate(date: Date) -> Int {
+    func hoursOfDate(date: Date) -> Int {
         return self.component(.hour, from: date)
     }
     
-    func daysInDate(date: Date) -> Int {
+    func daysOfDate(date: Date) -> Int {
         return self.component(.day, from: date)
     }
     
-    func monthsInDate(date: Date) -> Int {
+    func monthsOfDate(date: Date) -> Int {
         return self.component(.month, from: date)
     }
     
-    func yearsInDate(date: Date) -> Int {
+    func yearOfDate(date: Date) -> Int {
         return self.component(.year, from: date)
     }
     
-    func eraInDate(date: Date) -> Int {
+    func eraOfDate(date: Date) -> Int {
         return self.component(.era, from: date)
     }
 }
