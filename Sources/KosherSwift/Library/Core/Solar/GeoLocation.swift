@@ -25,7 +25,7 @@ class GeoLocation {
      *
      *  @return A configured KCGeoLocation instance.
      */
-    init(name: String="Unspecified Location", latituide: Double, longitude: Double, timeZone: TimeZone, elevation: Double=0) {
+    init(name: String="Unspecified Location", latituide: Double, longitude: Double, elevation: Double=0, timeZone: TimeZone) {
         self.loationName = name
         self.latitude = latituide
         self.longitude = longitude
@@ -33,7 +33,7 @@ class GeoLocation {
         self.altitude = elevation
     }
     
-    static let Sample = GeoLocation(name: "Greenwich, England",
+    static let sample = GeoLocation(name: "Greenwich, England",
                                     latituide: 51.4772,
                                     longitude: 0,
                                     timeZone: TimeZone(secondsFromGMT: 0)!
@@ -83,14 +83,14 @@ class GeoLocation {
     }
     
     func vincentyFormulaFor(location: GeoLocation, withBearing formula: Constants.BearingFormula) -> Double? {
-        var a: Double = 6378137
-        var b: Double = 6356752.3142
-        var f: Double = 1 / 298.257223563  // WGS-84 ellipsio
-        var L: Double = (location.longitude - self.longitude).inRadians
-        var U1: Double = atan((1 - f) * tan(self.latitude.inRadians))
-        var U2: Double = atan((1 - f) * tan(location.latitude.inRadians))
-        var sinU1: Double = sin(U1), cosU1 = cos(U1)
-        var sinU2: Double = sin(U2), cosU2 = cos(U2)
+        let a: Double = 6378137
+        let b: Double = 6356752.3142
+        let f: Double = 1 / 298.257223563  // WGS-84 ellipsio
+        let L: Double = (location.longitude - self.longitude).inRadians
+        let U1: Double = atan((1 - f) * tan(self.latitude.inRadians))
+        let U2: Double = atan((1 - f) * tan(location.latitude.inRadians))
+        let sinU1: Double = sin(U1), cosU1 = cos(U1)
+        let sinU2: Double = sin(U2), cosU2 = cos(U2)
         
         var lambda: Double = L
         var lambdaP: Double = 2 * .pi
@@ -141,11 +141,11 @@ class GeoLocation {
             return nil; // formula failed to converge
         }
         
-        var uSq: Double = cosSqAlpha * (a * a - b * b) / (b * b);
-        var A: Double = 1 + uSq / 16384
+        let uSq: Double = cosSqAlpha * (a * a - b * b) / (b * b);
+        let A: Double = 1 + uSq / 16384
         * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)));
-        var B: Double = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)));
-        var deltaSigma: Double = B
+        let B: Double = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)));
+        let deltaSigma: Double = B
         * sinSigma
         * (cos2SigmaM + B
            / 4
@@ -153,12 +153,12 @@ class GeoLocation {
               / 6 * cos2SigmaM
               * (-3 + 4 * sinSigma * sinSigma)
               * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
-        var distance: Double = b * A * (sigma - deltaSigma);
+        let distance: Double = b * A * (sigma - deltaSigma);
         
         // initial bearing
-        var fwdAz: Double = atan2(cosU2 * sinLambda, cosU1 * sinU2 - sinU1 * cosU2 * cosLambda).inDegrees
+        let fwdAz: Double = atan2(cosU2 * sinLambda, cosU1 * sinU2 - sinU1 * cosU2 * cosLambda).inDegrees
         // final bearing
-        var revAz: Double = atan2(cosU1 * sinLambda, -sinU1 * cosU2 + cosU1 * sinU2 * cosLambda).inDegrees
+        let revAz: Double = atan2(cosU1 * sinLambda, -sinU1 * cosU2 + cosU1 * sinU2 * cosLambda).inDegrees
         switch formula {
         case .distance:
             return distance
