@@ -1,38 +1,64 @@
 //
 //  ZmanimCalendar.swift
-//  
+//
 //
 //  Created by Benji Tusk on 10/12/22.
 //
 
 import Foundation
 
-class ZmanimCalendar: ZmanimCalendarInterface {
+class ZmanimCalendar: AstronomicalCalendar {
+    var alos72: Date?
+    var alosHashachar: Date?
+    var candleLighting: Date?
+    /// I have no idea what the heck this is
+    var candleLightingOffset = 0
+    var chatzot: Date?
+    var minchaGedola: Date?
+    var minchaKetana: Date?
+    var plagHamincha: Date?
+    var shaahZmanisGra: Double?
+    var shaahZmanisMogenAvraham: Double?
+    var sofZmanShmaGra: Date?
+    var sofZmanShmaMogenAvraham: Date?
+    var sofZmanTfilaGra: Date?
+    var sofZmanTfilaMogenAvraham: Date?
+    var tzais: Date?
+    var tzais72: Date?
     
-}
-
-protocol ZmanimCalendarInterface: AstronomicalCalendar {
-    var candleLightingOffset: Int { get }
-    var alosHashachar: Date { get }
-    var alos72: Date { get }
-    var chatzos: Date { get }
-    var sofZmanShmaGra: Date { get }
-    var sofZmanShmaMogenAvraham: Date { get }
-    var candleLighting: Date { get }
-    func candleLightingWithOffsetFromSunset(offset: Int) -> Date
-    var candleLighting15: Date { get }
-    var candleLighting18: Date { get }
-    var candleLighting20: Date { get }
-    var candleLighting22: Date { get }
-    var candleLighting30: Date { get }
-    var candleLighting40: Date { get }
-    var sofZmanTfilaGra: Date { get }
-    var sofZmanTfilaMogenAvraham: Date { get }
-    var minchaGedola: Date { get }
-    var minchaKetana: Date { get }
-    var plagHamincha: Date { get }
-    var tzais: Date { get }
-    var tzais72: Date { get }
-    var shaahZmanisGra: Double { get }
-    var shaahZmanisMogenAvraham: Double { get }
+    override init(location: GeoLocation) {
+        super.init(location: location)
+        alos72 = date(byAdding: -72, component: .minute, to: seaLevelSunrise)
+        shaahZmanisGra = temporalHourFromSunrise(sunrise: seaLevelSunrise, sunset: seaLevelSunset)
+        shaahZmanisMogenAvraham = temporalHourFromSunrise(sunrise: alos72, sunset: tzais72)
+        alosHashachar = sunriseOffsetByDegrees(offsetZenith: Constants.Zenith.sixteenPointOne)
+        chatzot = sunTransit
+        if shaahZmanisGra != nil {
+            sofZmanShmaGra  = seaLevelSunrise?.addingTimeInterval(shaahZmanisGra! * 3)
+            sofZmanTfilaGra = seaLevelSunrise?.addingTimeInterval(shaahZmanisGra! * 4)
+            minchaGedola    = seaLevelSunrise?.addingTimeInterval(shaahZmanisGra! * 6.5)
+            minchaKetana    = seaLevelSunrise?.addingTimeInterval(shaahZmanisGra! * 9.5)
+            plagHamincha    = seaLevelSunrise?.addingTimeInterval(shaahZmanisGra! * 10.75)
+        } else {
+            sofZmanShmaGra  = nil
+            sofZmanTfilaGra = nil
+            minchaGedola    = nil
+            minchaKetana    = nil
+            plagHamincha    = nil
+        }
+        if shaahZmanisMogenAvraham != nil {
+            sofZmanShmaMogenAvraham     = seaLevelSunrise?.addingTimeInterval(shaahZmanisMogenAvraham! * 3)
+            sofZmanTfilaMogenAvraham    = alos72?.addingTimeInterval(shaahZmanisMogenAvraham! * 4)
+        } else {
+            sofZmanShmaMogenAvraham     = nil
+            sofZmanTfilaMogenAvraham    = nil
+        }
+        candleLighting = candleLightingWithOffsetFromSunset(offset: candleLightingOffset)
+        tzais = sunsetOffsetByDegrees(offsetZenith: Constants.Zenith.eightPointFive)
+        tzais72 = date(byAdding: 72, component: .minute, to: seaLevelSunset)
+    }
+    func candleLightingWithOffsetFromSunset(offset: Int) -> Date? {
+        return date(byAdding: -offset, component: .minute, to: sunset)
+    }
+    
 }
