@@ -12,14 +12,14 @@ extension Constants {
      *
      *  This is defined as 360.0 / 24.0. There are 24 hours in a day and 360 degrees per day.
      */
-    static let degreesPerHour: Float = 360.0 / 24.0
+    static let degreesPerHour: Double = 360.0 / 24.0
     
     /** kSolarRadius
      *
      *  The commonly used average solar radius in minutes of a degree.
      *
      */
-    static let solarRadius: Float = 16.0 / 60.0
+    static let solarRadius: Double = 16.0 / 60.0
     
     /** kRefraction
      *
@@ -27,11 +27,11 @@ extension Constants {
      *
      *  Calendrical Calculations lists a more accurate global average of 34.478885263888294.
      */
-    static let refraction: Float = 34.0 / 60.0
+    static let refraction: Double = 34.0 / 60.0
     
     /** kEarthRadiusInKilometers
      *
      *  The diameter of the earth's radius in kilometers.
      */
-    static let earthRadiusInKilometers: Float = 6356.9
+    static let earthRadiusInKilometers: Double = 6356.9
 }

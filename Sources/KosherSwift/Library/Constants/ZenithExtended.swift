@@ -17,7 +17,7 @@ extension Constants.Zenith {
      *  walk 4 *mil* at 18 minutes a mil (*Rambam* and others). The sun's position at 72
      *  minutes before sunrise in Jerusalem on the equinox is 16.1 degrees below geometric zenith.
      */
-    static let sixteenPointOne: Float = Constants.Zenith.geometric + 16.1
+    static let sixteenPointOne: Double = Constants.Zenith.geometric + 16.1
     
     /** kZenithEightPointFive
      *
@@ -30,7 +30,7 @@ extension Constants.Zenith {
      *  considers this the time that 3 small stars are visible, which is later than the
      *  required 3 medium stars.
      */
-    static let eightPointFive: Float = Constants.Zenith.geometric + 8.5
+    static let eightPointFive: Double = Constants.Zenith.geometric + 8.5
     
     /** kZenithThreePointSeven
      *
@@ -41,7 +41,7 @@ extension Constants.Zenith {
      *  geometric zenith at this time in Jerusalem on March 16,
      *  about 4 days before the equinox, the day that a solar hour is 60 minutes.
      */
-    static let threePointSeven: Float = Constants.Zenith.geometric + 3.7
+    static let threePointSeven: Double = Constants.Zenith.geometric + 3.7
     
     /** kZenithFivePointNinetyFive
      *
@@ -52,7 +52,7 @@ extension Constants.Zenith {
      *  on March 16, about 4 days before the equinox, the day that a solar hour is 60 minutes,
      *  which calculates to 5.95 degrees below geometric zenith.
      */
-    static let fivePointNinetyFive: Float = Constants.Zenith.geometric + 5.95
+    static let fivePointNinetyFive: Double = Constants.Zenith.geometric + 5.95
     
     /** kZenithSevenPointZeroEightThree
      *
@@ -68,7 +68,7 @@ extension Constants.Zenith {
      *  *Tenuvas Sadeh* and very close to the time of the *Mekor Chesed* on
      *  the *Sefer chasidim*.
      */
-    static let sevenPointZeroEightThree: Float = Constants.Zenith.geometric + 7 + (5/60)
+    static let sevenPointZeroEightThree: Double = Constants.Zenith.geometric + 7 + (5/60)
     
     /** kZenithTenPointTwo
      *
@@ -79,7 +79,7 @@ extension Constants.Zenith {
      *  March 16, about 4 days before the equinox, the day that a solar hour is 60 minutes, which
      *  calculates to 10.2 degrees below geometric zenith.
      */
-    static let tenPointTwo: Float = Constants.Zenith.geometric + 10.2
+    static let tenPointTwo: Double = Constants.Zenith.geometric + 10.2
     
     /** kZenithElevenDegrees
      *
@@ -91,7 +91,7 @@ extension Constants.Zenith {
      *  equinox, the day that a solar hour is 60 minutes which calculates to 11 degrees
      *  below geometric zenith
      */
-    static let elevenDegrees: Float = Constants.Zenith.geometric + 11
+    static let elevenDegrees: Double = Constants.Zenith.geometric + 11
     
     /** kZenithElevenPointFive
      *
@@ -103,7 +103,7 @@ extension Constants.Zenith {
      *  March 16, about 4 days before the equinox, the day that a solar hour
      *  is 60 minutes which calculates to 11.5 degrees below geometric zenith.
      */
-    static let elevenPointFive: Float = Constants.Zenith.geometric + 11.5
+    static let elevenPointFive: Double = Constants.Zenith.geometric + 11.5
     
     /** kZenithThirteenDegrees
      *
@@ -111,7 +111,7 @@ extension Constants.Zenith {
      *
      *  No further details were available in KosherJava.
      */
-    static let thirteenDegrees: Float = Constants.Zenith.geometric + 13
+    static let thirteenDegrees: Double = Constants.Zenith.geometric + 13
     
     /** kZenithThirteenPointTwentyFourDegrees
      *
@@ -123,7 +123,7 @@ extension Constants.Zenith {
      *  details about the degrees.
      */
 
-    static let thirteenPointTwentyFourDegrees: Float = Constants.Zenith.geometric + 13.24
+    static let thirteenPointTwentyFourDegrees: Double = Constants.Zenith.geometric + 13.24
 
     /** kZenithNineteenPointEight
      *
@@ -142,7 +142,7 @@ extension Constants.Zenith {
      *
      */
 
-    static let nineteenPointEight: Float = Constants.Zenith.geometric + 19.8
+    static let nineteenPointEight: Double = Constants.Zenith.geometric + 19.8
 
     /** kZenithTwentySix
      *
@@ -159,7 +159,7 @@ extension Constants.Zenith {
      * @see tzais120
      */
 
-    static let twentySix: Float = Constants.Zenith.geometric + 26.0
+    static let twentySix: Double = Constants.Zenith.geometric + 26.0
 
     /**
      *  In KosherJava, this was marked experimentimal and might not
@@ -177,7 +177,7 @@ extension Constants.Zenith {
      *  a solar hour is 60 minutes which calculates to 4.37 degrees below geometric zenith.
      */
 
-    static let fourPointThirtySeven: Float = Constants.Zenith.geometric + 4.37
+    static let fourPointThirtySeven: Double = Constants.Zenith.geometric + 4.37
 
     /** kZenithFourPointSixtyOne
      *
@@ -192,7 +192,7 @@ extension Constants.Zenith {
      *  @see tzaisGeonim4Point61Degrees
      */
 
-    static let fourPointSixtyOne: Float = Constants.Zenith.geometric + 4.61
+    static let fourPointSixtyOne: Double = Constants.Zenith.geometric + 4.61
 
     /** kZenithFourPointEight
      *
@@ -201,7 +201,7 @@ extension Constants.Zenith {
      *  No further details were available in KosherJava.
      */
 
-    static let fourPointEight: Float = Constants.Zenith.geometric + 4.8
+    static let fourPointEight: Double = Constants.Zenith.geometric + 4.8
 
     /** kZenithThreePointSixtyFive
      *
@@ -216,7 +216,7 @@ extension Constants.Zenith {
      *  @see tzaisGeonim3Point65Degrees
      */
 
-    static let threePointSixtyFive: Float = Constants.Zenith.geometric + 3.65
+    static let threePointSixtyFive: Double = Constants.Zenith.geometric + 3.65
 
     /** kZenithFivePointEightyEight
      *
@@ -225,5 +225,5 @@ extension Constants.Zenith {
      *  No further details were available in KosherJava.
      */
 
-    static let fivePointEightyEight: Float = Constants.Zenith.geometric + 5.88
+    static let fivePointEightyEight: Double = Constants.Zenith.geometric + 5.88
 }

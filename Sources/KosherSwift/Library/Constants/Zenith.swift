@@ -19,24 +19,24 @@ extension Constants {
          *  It is important to note that for sunrise and sunset the adjusted zenith is required to account for the radius of the sun and refraction. The adjusted zenith should not
          * be used for calculations above or below 90 degrees since they are usually are calculated as an offset to 90 degrees.
          */
-        static let geometric: Float = 90.0
+        static let geometric: Double = 90.0
         
         /** kZenithCivil
          *
          *  The sun's zenith at civil twilight (96 degrees)
          */
-        static let civil: Float = 96.0
+        static let civil: Double = 96.0
         
         /** kZenithNautical
          *
          *  The sun's zenith at nautical twilight (102 degrees)
          */
-        static let nautical: Float = 102.0
+        static let nautical: Double = 102.0
         
         /** kZenithAstronomical
          *
          *  The sun's zenith at astronomical twilight (108 degrees)
          */
-        static let astronomical: Float = 108.0
+        static let astronomical: Double = 108.0
     }
 }

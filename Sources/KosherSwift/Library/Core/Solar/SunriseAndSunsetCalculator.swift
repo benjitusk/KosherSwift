@@ -14,7 +14,7 @@ class SunriseAndSunsetCalcuator: AstronomicalCalculator {
     init(location: GeoLocation?) {
         calculatorName = "United States Naval Almanac Algorithm"
         if location == nil {
-            geoLocation = .Sample
+            geoLocation = .sample
         } else {
             geoLocation = location!
         }
@@ -36,12 +36,12 @@ class SunriseAndSunsetCalcuator: AstronomicalCalculator {
             if cosLocalHourAngle < -1 { return nil }
             localHourAngle = cosLocalHourAngle.acosDeg()
         }
-        let localHour = localHourAngle / Double(Constants.degreesPerHour)
+        let localHour = localHourAngle / Constants.degreesPerHour
         let hoursFromMeridian = hoursFromMeridianFor(longitude: longitude)
         let approxTimeDays = approxTimeDaysFor(dayOfYear: dayOfYear, hoursFromMeridian: hoursFromMeridian, forCalculation: type)
         let localMeanTime = localMeanTimeFor(hour: localHour, ascension: sunRightAscentionHours, approxTimeDays: approxTimeDays)
         
-        var processedTime = localMeanTime - hoursFromMeridian
+        let processedTime = localMeanTime - hoursFromMeridian
         return processedTime.truncatingRemainder(dividingBy: 24)
     }
     
@@ -67,7 +67,7 @@ class SunriseAndSunsetCalcuator: AstronomicalCalculator {
         let lQuadrant = floor(longitude / 90.0) * 90.0;
         let raQuadrant = floor(ra / 90.0) * 90.0;
         ra = ra + (lQuadrant - raQuadrant);
-        return ra / Double(Constants.degreesPerHour)
+        return ra / Constants.degreesPerHour
     }
     
     func sunTrueLongitudeFromAnomaly(_ sunMeanAnomaly: Double) -> Double {
@@ -84,7 +84,7 @@ class SunriseAndSunsetCalcuator: AstronomicalCalculator {
     }
     
     func hoursFromMeridianFor(longitude: Double) -> Double {
-        return longitude/Double(Constants.degreesPerHour)
+        return longitude / Constants.degreesPerHour
     }
     
     func approxTimeDaysFor(dayOfYear: Int, hoursFromMeridian: Double, forCalculation calculation: Constants.SunCalculation) -> Double {
@@ -121,14 +121,14 @@ class SunriseAndSunsetCalcuator: AstronomicalCalculator {
     
     func adjustZenith(_ zenith: Double, forElevation elevation: Double) -> Double {
         var zenith = zenith
-        if zenith == Double(Constants.Zenith.geometric) {
-            zenith += Double(Constants.solarRadius + Constants.refraction) + elevationAdjustment(elevation)
+        if zenith == Constants.Zenith.geometric {
+            zenith += Constants.solarRadius + Constants.refraction + elevationAdjustment(elevation)
         }
         return zenith
     }
     
     func elevationAdjustment(_ elevation: Double) -> Double {
-        let earthRadius = Double(Constants.earthRadiusInKilometers)
+        let earthRadius = Constants.earthRadiusInKilometers
         return acos(earthRadius / (earthRadius + (elevation / 1000))).inDegrees
     }
 }

@@ -36,7 +36,7 @@ class AstronomicalCalendar {
      */
     
     var sunrise: Date? {
-        let sunrise = UTCSunrise(zenith: Double(Constants.Zenith.geometric))
+        let sunrise = UTCSunrise(zenith: Constants.Zenith.geometric)
         if sunrise == nil { return nil }
         return dateFromTime(time: sunrise!)
     }
@@ -148,7 +148,7 @@ class AstronomicalCalendar {
     }
     
     func sunsetOffsetByDegrees(offsetZenith: Float) -> Date? {
-        return sunsetOffsetByDegrees(offsetZenith: Double(offsetZenith))
+        return sunsetOffsetByDegrees(offsetZenith: offsetZenith)
     }
     
     
@@ -221,10 +221,6 @@ class AstronomicalCalendar {
         astronomicalCalculator.UTCSunriseForDate(date: workingDate, zenith: zenith, adjustForElevation: true)
     }
     
-    func UTCSunrise(zenith: Float) -> Double? {
-        return UTCSunrise(zenith: Double(zenith))
-    }
-    
     /**
      * A method that returns the sunrise in UTC time without correction for time zone offset from GMT and without using
      * daylight savings time. Non-sunrise and sunset calculations such as dawn and dusk, depend on the amount of visible
@@ -237,7 +233,6 @@ class AstronomicalCalendar {
      *         not set, `nil` will be returned. See detailed explanation on top of the page.
      */
     func UTCSeaLevelSunrise(zenith: Double) -> Double? {
-#warning("Might not be properly translated from Obj-C")
         return astronomicalCalculator.UTCSunriseForDate(date: workingDate, zenith: zenith, adjustForElevation: false)
     }
     
@@ -252,10 +247,6 @@ class AstronomicalCalendar {
      */
     func UTCSunset(zenith: Double) -> Double? {
         return astronomicalCalculator.UTCSunsetForDate(date: workingDate, zenith: zenith, adjustForElevation: true)
-    }
-    
-    func UTCSunset(zenith: Float) -> Double? {
-        return UTCSunset(zenith: Double(zenith))
     }
     
     /**
@@ -273,10 +264,6 @@ class AstronomicalCalendar {
     func UTCSeaLevelSunset(zenith: Double) -> Double? {
         return astronomicalCalculator.UTCSunsetForDate(date: workingDate, zenith: zenith, adjustForElevation: false)
     }
-    func UTCSeaLevelSunset(zenith: Float) -> Double? {
-        return UTCSeaLevelSunset(zenith: Double(zenith))
-    }
-    
     
     /**
      * A utility method that will allow the calculation of a temporal (solar) hour based on the sunrise and sunset
@@ -372,3 +359,11 @@ class AstronomicalCalendar {
         return formatter.string(from: date)
     }
 }
+
+extension AstronomicalCalendar {
+    func date(byAdding value: Int, component: Calendar.Component, to date: Date?) -> Date? {
+        guard date != nil else { return nil }
+        return self.internalCalendar.date(byAdding: component, value: value, to: date!)
+    }
+}
+
